@@ -1,0 +1,17 @@
+[package]
+name = "gotham-micro"
+version = "0.1.0"
+authors = ["Ryan Barth <ryan@barth.tech>"]
+
+[dependencies]
+gotham = { git = "https://github.com/gotham-rs/gotham.git" }
+gotham_derive = { git = "https://github.com/gotham-rs/gotham.git" }
+diesel = "*"
+#gotham_middleware_diesel = { git = "https://github.com/gotham-rs/middleware-diesel.git", branch = "feature/initial-concept" }
+gotham_middleware_diesel = { path = "../gotham-rs/middleware-diesel" }
+futures = "*"
+hyper = "*"
+chrono = "*"
+fern = "*"
+mime = "*"
+log = "*"
