@@ -2,13 +2,20 @@
 extern crate futures;
 extern crate hyper;
 extern crate gotham;
-#[macro_use]
-extern crate gotham_derive;
+//#[macro_use]
+//extern crate gotham_derive;
 extern crate chrono;
-#[macro_use]
+//#[macro_use]
 extern crate log;
 extern crate fern;
 extern crate mime;
+extern crate dotenv;
+extern crate gotham_middleware_diesel;
+extern crate diesel;
+
+use std::env;
+
+use diesel::pg::PgConnection;
 
 use futures::{future, Future, Stream};
 
@@ -31,6 +38,8 @@ use gotham::handler::{NewHandler, HandlerFuture, IntoHandlerError};
 use gotham::middleware::pipeline::new_pipeline;
 use gotham::state::{State, FromState};
 use gotham::http::response::create_response;
+
+use gotham_middleware_diesel::DieselMiddleware;
 
 fn static_route<NH, P, C>(
     methods: Vec<Method>,
@@ -56,8 +65,14 @@ where
 }
 
 fn router() -> Router {
+    let database_url = env::var("DATABASE_URL")
+        .expect("DATABASE_URL must be defined");
+    let diesel_middleware: DieselMiddleware<PgConnection> = DieselMiddleware::new(&database_url, None);
     let editable_pipeline_set = new_pipeline_set();
-    let (editable_pipeline_set, global) = editable_pipeline_set.add(new_pipeline().build());
+    let (editable_pipeline_set, global) = editable_pipeline_set.add(
+        new_pipeline()
+        .add(diesel_middleware)
+        .build());
     let pipeline_set = finalize_pipeline_set(editable_pipeline_set);
 
     let mut tree_builder = TreeBuilder::new();
@@ -152,6 +167,7 @@ fn set_logging() {
 }
 
 fn main() {
+    dotenv::dotenv().ok();
     set_logging();
 
     gotham::start("127.0.0.1:7878", router());
