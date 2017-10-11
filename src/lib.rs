@@ -54,7 +54,7 @@ use gotham::router::route::dispatch::{new_pipeline_set, finalize_pipeline_set, P
 use gotham::router::route::matcher::MethodOnlyRouteMatcher;
 use gotham::router::tree::TreeBuilder;
 use gotham::router::tree::node::{NodeBuilder, SegmentType};
-use gotham::handler::{NewHandler, HandlerFuture, IntoHandlerError};
+use gotham::handler::{Handler, NewHandler, HandlerFuture, IntoHandlerError, IntoResponse};
 use gotham::middleware::pipeline::new_pipeline;
 use gotham::state::{State, FromState};
 use gotham::http::response::create_response;
